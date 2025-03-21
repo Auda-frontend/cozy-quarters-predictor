@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Card, 
@@ -17,11 +16,11 @@ import { HouseData, defaultHouseData, neighborhoods } from '../data/modelData';
 
 interface HouseFormProps {
   onSubmit: (data: HouseData) => void;
+  isLoading?: boolean;
 }
 
-const HouseForm: React.FC<HouseFormProps> = ({ onSubmit }) => {
+const HouseForm: React.FC<HouseFormProps> = ({ onSubmit, isLoading = false }) => {
   const [formData, setFormData] = useState<HouseData>({...defaultHouseData});
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (field: keyof HouseData, value: any) => {
     setFormData(prev => ({
@@ -32,13 +31,7 @@ const HouseForm: React.FC<HouseFormProps> = ({ onSubmit }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    
-    // Simulate API call delay
-    setTimeout(() => {
-      onSubmit(formData);
-      setIsLoading(false);
-    }, 800);
+    onSubmit(formData);
   };
 
   const currentYear = new Date().getFullYear();

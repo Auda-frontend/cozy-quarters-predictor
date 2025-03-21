@@ -11,9 +11,10 @@ import { formatPrice } from '../utils/prediction';
 
 interface PredictionResultProps {
   price: number | null;
+  isLoading?: boolean;
 }
 
-const PredictionResult: React.FC<PredictionResultProps> = ({ price }) => {
+const PredictionResult: React.FC<PredictionResultProps> = ({ price, isLoading = false }) => {
   const prevPriceRef = useRef<number | null>(null);
   const priceDisplayRef = useRef<HTMLDivElement>(null);
   
@@ -28,7 +29,7 @@ const PredictionResult: React.FC<PredictionResultProps> = ({ price }) => {
     }
   }, [price]);
   
-  if (price === null) return null;
+  if (price === null && !isLoading) return null;
   
   return (
     <Card className="glass-card w-full mt-8 overflow-hidden">
@@ -41,9 +42,17 @@ const PredictionResult: React.FC<PredictionResultProps> = ({ price }) => {
       <CardContent className="pt-6 pb-8">
         <div ref={priceDisplayRef} className="flex flex-col items-center justify-center">
           <div className="chip mb-3">Estimated Value</div>
-          <div className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary">
-            {formatPrice(price)}
-          </div>
+          
+          {isLoading ? (
+            <div className="h-16 flex items-center justify-center">
+              <div className="loader"></div>
+            </div>
+          ) : (
+            <div className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary">
+              {formatPrice(price!)}
+            </div>
+          )}
+          
           <p className="mt-4 text-sm text-muted-foreground text-center max-w-md">
             This estimate is based on current market trends and comparable properties
             in the selected neighborhood.

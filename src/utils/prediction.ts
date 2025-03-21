@@ -1,8 +1,34 @@
-
 import { HouseData } from "../data/modelData";
 
+const API_URL = "http://localhost:5000";
+
+// This function calls our Python API to get predictions
+export async function predictPriceFromAPI(data: HouseData): Promise<number | null> {
+  try {
+    const response = await fetch(`${API_URL}/api/predict`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("API Error:", errorData);
+      throw new Error(errorData.error || "Failed to get prediction from API");
+    }
+    
+    const result = await response.json();
+    return result.prediction;
+  } catch (error) {
+    console.error("Error fetching prediction:", error);
+    return null;
+  }
+}
+
+// Existing fallback function - will be used if API call fails
 // This is a simplified model that simulates what a real ML model would do
-// In a real application, you would call an API that runs the actual model
 export function predictPrice(data: HouseData): number {
   // Base price
   let predictedPrice = 150000;
