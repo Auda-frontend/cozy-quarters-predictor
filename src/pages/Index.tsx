@@ -10,19 +10,25 @@ import { predictPrice, predictPriceFromAPI } from '../utils/prediction';
 import { toast } from "@/components/ui/use-toast";
 
 const Index: React.FC = () => {
+  console.log("Index page rendering");
+  
   const [predictedPrice, setPredictedPrice] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isModelAvailable, setIsModelAvailable] = useState<boolean | null>(null);
 
   // Check if backend model is available
   useEffect(() => {
+    console.log("Checking model status...");
     const checkModelStatus = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/model/status');
+        console.log("Model status response:", response);
         if (response.ok) {
           const data = await response.json();
+          console.log("Model status data:", data);
           setIsModelAvailable(data.trained);
         } else {
+          console.log("Model status error:", response.status);
           setIsModelAvailable(false);
         }
       } catch (error) {
@@ -35,13 +41,16 @@ const Index: React.FC = () => {
   }, []);
 
   const handleFormSubmit = async (data: HouseData) => {
+    console.log("Form submitted with data:", data);
     setIsLoading(true);
     
     try {
       // Try to get prediction from API first
       if (isModelAvailable) {
+        console.log("Trying API prediction...");
         const apiPrice = await predictPriceFromAPI(data);
         if (apiPrice !== null) {
+          console.log("API prediction successful:", apiPrice);
           setPredictedPrice(apiPrice);
           toast({
             title: "Backend ML Model Used",
@@ -53,7 +62,9 @@ const Index: React.FC = () => {
       }
       
       // Fall back to frontend prediction if API fails
+      console.log("Using fallback prediction model");
       const fallbackPrice = predictPrice(data);
+      console.log("Fallback prediction:", fallbackPrice);
       setPredictedPrice(fallbackPrice);
       
       toast({
